@@ -4,6 +4,8 @@
 
 #include "MyDB_PageHandle.h"
 #include "MyDB_Table.h"
+#include "MyDB_Page.h"
+#include <unordered_map>
 
 using namespace std;
 
@@ -48,11 +50,36 @@ public:
 	~MyDB_BufferManager ();
 
 	// FEEL FREE TO ADD ADDITIONAL PUBLIC METHODS 
+	void popPage ();
+
+	void erasePage ();
+
+	void visitPage ();
 
 private:
+	//keys are pairs of table pointers and page numbers, values are 
+	unordered_map < pair <MyDB_TablePtr, size_t>, MyDB_PagePtr> pageMap;
 
-	// YOUR STUFF HERE
+	//to check if a file is open
+	unordered_map <MyDB_TablePtr, int> openFile;
 
+	//check if the page handle exists
+	unordered_map <MyDB_PageHandle, list<MyDB_PageHandle> :: iterator> handleMap;
+
+	//A linked list that stored all page handles
+	list <MyDB_PageHandle> handleList;
+
+	// all of the chunks of RAM that are currently not allocated
+	vector <void *> availableRam;
+
+	// all of the positions in the temporary file that are currently not in use
+	priority_queue <size_t> availablePositions;
+
+	//size of a page
+	size_t pageSize;
+
+	//the file needed to write
+	string targetFile;
 };
 
 #endif
